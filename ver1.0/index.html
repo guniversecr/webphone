@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Simples Webphone</title>
+    <link rel="icon" type="image/gif" href="img/favicon.ico" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link href="css/ctxSip.css" rel="stylesheet" type="text/css" />
+    <!-- <script type="text/javascript" src="scripts/recorder.js"></script> -->
+</head>
+<body id="sipClient">
+<div class="container">
+
+
+<div id="loginform" class="container" style="padding: 50px">
+  <div class="row">
+    <div class="col">
+      <center><img src="images/simplessolution.png" class="img-fluid mx-auto"/></center>
+      <form  method="post">
+        <h2 class="text-center">Login</h2>
+        <p class="text-center">Your SIP credential is required from your account. All fields are required.</p>
+
+        <div class="form-group">
+          <label for="phone_login">Username</label>
+          <input type="text" class="form-control" id="phone_user" name="phone_user" autocomplete="user" placeholder="Enter your SIP username/extension" minlength="3" maxlength="10" required pattern="[0-9]+" title="The SIP username/extension must have a minimum of 3 and a maximum of 10 digits." required>
+        </div>
+        <div class="form-group">
+          <label for="phone_pass">Password</label>
+          <input type="password" class="form-control" id="phone_secret" name="phone_secret" autocomplete="user-password" placeholder="Password" minlength="3" maxlength="50" title="The password must have a minimum of 3 and a maximum of 50 characters." required>
+        </div>
+        <div class="form-group">
+          <label for="subdomainclient">Subdomain Client</label>
+          <input type="text" class="form-control" id="subdomainclient" name="subdomainclient" autocomplete="domain" placeholder="mycompanyname" minlength="4" maxlength="50" required pattern="[a-z0-9]+" title="The Subdomain Client must have a minimum of 5 and a maximum of 50 characters." required>
+        </div>
+        <button  id='formSubmit' class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<div id="phonePanel" >
+    <img src="images/simplessolution.png" class="img-fluid mx-auto pull-right" style="max-width: 190px;" />
+<div class="row">
+    <div class="col-md-11">
+        <div class="clearfix sipStatus">
+            <div id="txtCallStatus" class="pull-right">&nbsp;</div>
+            <div id="txtRegStatus"></div>
+        </div>
+</div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-md-4    ">
+        <div class="form-group" id="phoneUI">
+        <div class="">
+            <div class="input-group-btn">
+                
+                
+                    <div class="form-group">
+                    <input type="text" name="number" id="numDisplay" class="form-control text-center input-lg" value="" placeholder="Enter number..." autocomplete="off"  />
+                    </div>
+                </div>
+                
+
+                <div id="sip-dialpad"  >
+                    <button type="button" class="btn btn-default digit" data-digit="1">1<span>&nbsp;</span></button>
+                    <button type="button" class="btn btn-default digit" data-digit="2">2<span>ABC</span></button>
+                    <button type="button" class="btn btn-default digit" data-digit="3">3<span>DEF</span></button>
+                    <button type="button" class="btn btn-default digit" data-digit="4">4<span>GHI</span></button>
+                    <button type="button" class="btn btn-default digit" data-digit="5">5<span>JKL</span></button>
+                    <button type="button" class="btn btn-default digit" data-digit="6">6<span>MNO</span></button>
+                    <button type="button" class="btn btn-default digit" data-digit="7">7<span>PQRS</span></button>
+                    <button type="button" class="btn btn-default digit" data-digit="8">8<span>TUV</span></button>
+                    <button type="button" class="btn btn-default digit" data-digit="9">9<span>WXYZ</span></button>
+                    <button type="button" class="btn btn-default digit" data-digit="*">*<span>&nbsp;</span></button>
+                    <button type="button" class="btn btn-default digit" data-digit="0">0<span>+</span></button>
+                    <button type="button" class="btn btn-default digit" data-digit="#">#<span>&nbsp;</span></button>
+                    <div class="clearfix">&nbsp;</div>
+                    
+                    <div class="text-center">
+                        <!-- <div id="controls"></div> -->
+                      
+       
+    </div>
+                    <button class="btn btn-success btn-block  btnCall" title="Call">
+                        <i class="fa fa-play"></i> Call
+                    </button>
+                    <!-- <button id=record class='botbtntxt btn btn-success'>Start Record</button>
+                    <button id=stopRecord disabled class='botbtntxt btn btn-danger'>Stop Record</button> -->
+                </div>
+                </div>
+            </div>
+        </div>
+  
+
+    <!-- <div class="col-md-1 text-center">
+      
+    </div> -->
+
+    
+    <div class="col-md-6">
+        <div class="well-sip">
+            <div id="sip-splash" class="text-muted text-center panel panel-default">
+                <div class="panel-body">
+                    <h3 class="page-header">
+                    <span class="fa-stack fa-2x">
+                        <i class="fa fa-circle fa-stack-2x text-success"></i>
+                        <i class="fa fa-phone fa-stack-1x fa-inverse"></i>
+                    </span><br>
+                    This is your phone.</h3>
+                    <p class="lead">To make a call enter a number or SIP address in the box above.</p>
+                    <small>Closing this window will cause calls to go to voicemail.</small>
+                </div>
+            </div>
+
+            <div id="sip-log" class="panel panel-default hide">
+                <div class="panel-heading">
+                    <h4 class="text-muted panel-title">Recent Calls <span class="pull-right"><i class="fa fa-trash text-muted sipLogClear" title="Clear Log"></i></span></h4>
+                </div>
+                <div id="sip-logitems" class="list-group">
+                    <p class="text-muted text-center">No recent calls from this browser.</p>
+                </div>
+            </div>
+            
+        </div>
+        <button type="button" id="btnLogout" class="btn btn-secondary pull-right    "><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div> 
+
+
+    
+    <div class="modal fade" id="mdlError" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- <div class="modal-header"> -->
+                    <!-- <h4 class="modal-title">Sip Error</h4> -->
+                <!-- </div> -->
+                <div class="modal-body text-center text-danger">
+                    <h3><i class="fa fa-3x fa-ban"></i></h3>
+                    <p class="lead">Sip registration failed. No calls can be handled.</p>
+
+                    <div id="loginform" class="form-inline">
+                        <div class="row">
+                          <div class="col">
+                            <center><img src="images/simplessolution.png" class="img-fluid mx-auto" style="max-width:200px;"/></center>
+                            <form  method="post" class="form">
+                              <h2 class="text-center">Login</h2>
+                              <p class="text-center">Your SIP credential is required from your account. All fields are required.</p>
+                      
+                              <div class="form-group">
+                                <label for="phone_login">Username</label>
+                                <input type="text" class="form-control input-sm" id="phone_user" name="phone_user" autocomplete="user" placeholder="Enter your SIP username/extension" minlength="3" maxlength="10" required pattern="[0-9]+" title="The SIP username/extension must have a minimum of 3 and a maximum of 10 digits." required>
+                              </div>
+                              <div class="form-group">
+                                <label for="phone_pass">Password</label>
+                                <input type="password" class="form-control" id="phone_secret" name="phone_secret" autocomplete="user-password" placeholder="Password" minlength="3" maxlength="50" title="The password must have a minimum of 3 and a maximum of 50 characters." required>
+                              </div>
+                              <div class="form-group">
+                                <label for="subdomainclient">Subdomain Client</label>
+                                <input type="text" class="form-control" id="subdomainclient" name="subdomainclient" autocomplete="domain" placeholder="mycompanyname" minlength="4" maxlength="50" required pattern="[a-z0-9]+" title="The Subdomain Client must have a minimum of 5 and a maximum of 50 characters." required>
+                              </div>
+                              <button  id='formSubmit' class="btn btn-primary">Submit</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+        
+      
+</div>
+</div>  
+</div>
+</div>
+
+<audio id="ringtone" src="sounds/incoming.mp3" loop></audio>
+<audio id="ringbacktone" src="sounds/outgoing.mp3" loop></audio>
+<audio id="dtmfTone" src="sounds/dtmf.mp3"></audio>
+<audio id="voice"></audio>
+
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="scripts/moment.js/moment.min.js"></script>
+
+<script type="text/javascript" src="scripts/SIP.js/sip.js"></script>
+<!-- <script type="text/javascript" src="scripts/config.js"></script> -->
+<script type="text/javascript" src="scripts/app.js"></script>
+<script type="text/javascript" src="scripts/login.js"></script>
+<!-- <script type="text/javascript" src="scripts/recorder.js"></script>
+<script type="text/javascript" src="scripts/recApp.js"></script> -->
+
+<script type="text/javascript">               
+    $('#subdomainclient').change(function(){
+        var domains = ["moviltech", "tonsoflead","labo"];
+        var v = $('#subdomainclient').val();
+        var n = domains.includes(v);
+        if(!n){
+            alert('That company does not exist');
+            $('#subdomainclient').val('');
+            return;
+        }
+
+    });                  
+    // function secondsTimeSpanToHMS(s) {
+    //   var h = Math.floor(s/3600); //Get whole hours
+    //   s -= h*3600;
+    //   var m = Math.floor(s/60); //Get remaining minutes
+    //   s -= m*60;
+    //   return h+":"+(m < 10 ? '0'+m : m)+":"+(s < 10 ? '0'+s : s); //zero padding on minutes and seconds
+    // }
+    $('#formSubmit').click(function(){
+        var v = $('#subdomainclient').val();
+        if(v == ''){
+            alert('That company does not exist')
+        }
+    });
+
+    $('#btnLogout').click(function(){
+        console.log("Logout");
+        var res = document.cookie;
+        var multiple = res.split(";");
+        for(var i = 0; i < multiple.length; i++) {
+        var key = multiple[i].split("=");
+        document.cookie = key[0]+" =; expires = Thu, 01 Jan 1970 00:00:00 UTC";
+        }
+        // location.reload(true);
+        location.replace(location.pathname);
+    });
+
+    jQuery('#numDisplay').change(function () {
+        this.value = this.value.replace(/\D/g,''); 
+        $('#numDisplay').focus();
+        // status = $('#txtCallStatus').val();
+        // if(status != 'Answered') {
+        // if(inviteSession !== null && typeof(inviteSession)!='undefined') {
+        //     answer();
+        // } else {
+        //     output = $('#formNumber').val();
+        //     if(output!='') {
+        //         dial(output);
+        //     }
+        // }
+    // }
+});
+
+// function __log(e, data) {
+//     log.innerHTML = "\n" + e + " " + (data || '');
+//   }
+//   var audio_context;
+//   var recorder;
+//   function startUserMedia(stream) {
+//     var input = audio_context.createMediaStreamSource(stream);
+//     __log('Media stream created.');
+//     // Uncomment if you want the audio to feedback directly
+//     input.connect(audio_context.destination);
+//     __log('Input connected to audio context destination.');
+    
+//     recorder = new Recorder(input);
+//      __log('Recorder initialised.');
+//   }
+//   function startRecording(button) {
+//     recorder && recorder.record();
+//     button.disabled = true;
+//     button.nextElementSibling.disabled = false;
+//     __log('Recording...');
+//   }
+//   function stopRecording(button) {
+//     recorder && recorder.stop();
+//     button.disabled = true;
+//     button.previousElementSibling.disabled = false;
+//     __log('Stopped recording.');
+    
+//     // create WAV download link using audio data blob
+//     createDownloadLink();
+    
+//     recorder.clear();
+//   }
+//   function createDownloadLink() {
+//     recorder && recorder.exportWAV(function(blob) {
+//       var url = URL.createObjectURL(blob);
+//       var li = document.createElement('li');
+//       var au = document.createElement('audio');
+//       var hf = document.createElement('a');
+      
+//       au.controls = true;
+//       au.src = url;
+//       hf.href = url;
+//       hf.download = new Date().toISOString() + '.wav';
+//       hf.innerHTML = hf.download;
+//       li.appendChild(au);
+//       // li.appendChild(hf);
+//       recordingslist.appendChild(li);
+//     });
+//   }
+//   window.onload = function init() {
+
+//     try {
+        
+//       // webkit shim
+//       window.AudioContext = window.AudioContext || window.webkitAudioContext;
+//       navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+//       window.URL = window.URL || window.webkitURL;
+      
+//       audio_context = new AudioContext;
+//       // __log('Audio context set up.');
+//       __log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
+//     } catch (e) {
+//       alert('No web audio support in this browser!');
+//     }
+    
+//     navigator.getUserMedia({audio: true}, startUserMedia, function(e) {
+//       __log('No live audio input: ' + e);
+//     });
+//   };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // $( "#refresh" ).click(function() {
+    //     $.getJSON( "https://graficoywebcr.com/cdr/read.php?q="+getCookie("phoneLogin"), function( data ) {
+    //         var items = [];
+    //         $.each( data, function( key, val ) {
+    //           items.push( "<td>" + val + "</td>" );
+    //         });
+    //         console.log("https://graficoywebcr.com/cdr/read.php?q="+getCookie("phoneLogin"));
+    //         $("#tbody").empty();
+
+    //         var table;
+    //         for(let i = 0; i < data.length; i++){
+    //           if(data[i].calltype === "1"){
+    //             ico = '<i class="fas fa-arrow-left text-danger"></i>';
+    //           }else {
+    //             ico = '<i class="fas fa-arrow-right text-success"></i>';
+    //           }
+    //             table += "<tr><td>"+ico+"</td><td>"+data[i].cid+"</td><td>"+secondsTimeSpanToHMS(data[i].duration)+"</td></tr>";
+    //         }
+    //         $("#tbody").append(table);
+    //       });
+    //     });
+    //   });
+
+    // navigator.mediaDevices.getUserMedia({audio:true})
+    //   .then(stream => {handlerFunction(stream)})
+    //         function handlerFunction(stream) {
+    //             rec = new MediaRecorder(stream);
+    //             rec.ondataavailable = e => {
+    //               audioChunks.push(e.data);
+    //               if (rec.state == "inactive"){
+    //                 let blob = new Blob(audioChunks,{type:'audio/wav'});
+    //                 recordedAudio.src = URL.createObjectURL(blob);
+    //                 recordedAudio.controls=true;
+    //                 recordedAudio.autoplay=true;
+    //                 sendData(blob)
+    //               }
+    //             }
+    //         } 
+    //       function sendData(data) {}
+
+    //         record.onclick = e => {
+    //           record.disabled = true;
+    //           stopRecord.disabled=false;
+    //           audioChunks = [];
+    //           rec.start();
+    //         }
+    //         stopRecord.onclick = e => {
+    //           record.disabled = false;
+    //           stop.disabled=true;
+    //           rec.stop();
+    //         }
+
+    //     window.onbeforeunload = function(event) {
+    //         event.returnValue = "Your custom message.";
+    //     };
+
+</script>
+</body>
+</html>
